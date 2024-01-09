@@ -11,4 +11,4 @@ class PhotoTrapSerializer(serializers.ModelSerializer):
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['photo_trap', 'photo', 'capture_date']
+        fields = '__all__'
