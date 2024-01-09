@@ -6,6 +6,8 @@ from .serializers import PhotoSerializer,PhotoTrapSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics
+from rest_framework.exceptions import ValidationError
+
 
 class PhotoTrapView(APIView):
 
@@ -37,8 +39,17 @@ class PhotoView(APIView):
 class PhotoListView(generics.ListCreateAPIView):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-    parser_classes = (MultiPartParser, FormParser)  # Necessário para o upload de imagens
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ValidationError as e:
+            print("Erro no formulário: ", request.data)
+            print("Detalhes do erro: ", e.detail)
+            raise e  # Re-lança a exceção para que seja manuseada pelo framework
+        return super().post(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        # Você pode adicionar lógica adicional aqui se necessário antes de salvar
         serializer.save()
