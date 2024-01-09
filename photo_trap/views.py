@@ -2,8 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Photo, PhotoTrap
-from .serializers import PhotoSerializer
+from .serializers import PhotoSerializer,PhotoTrapSerializer
 from django.shortcuts import get_object_or_404
+
+
 
 class PhotoTrapView(APIView):
 
@@ -18,17 +20,14 @@ class PhotoTrapView(APIView):
 
 
 class PhotoView(APIView):
-
-    def get(self, request, mac_address):
-        photo_trap = get_object_or_404(PhotoTrap, mac_address=mac_address)
-        photos = Photo.objects.filter(photo_trap=photo_trap)
+    def get(self, request):
+        photos = Photo.objects.all()
         serializer = PhotoSerializer(photos, many=True)
         return Response(serializer.data)
 
-    def post(self, request, mac_address):
+    def post(self, request):
         serializer = PhotoSerializer(data=request.data)
         if serializer.is_valid():
-            photo_trap = get_object_or_404(PhotoTrap, mac_address=mac_address)
-            serializer.save(photo_trap=photo_trap)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
