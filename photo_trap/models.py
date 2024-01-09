@@ -19,3 +19,10 @@ class PhotoTrap(models.Model):
     country = CountryField(blank_label='(select country)', default='BR')
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
+
+
+class Photo(models.Model):
+    photo_trap = models.ForeignKey(PhotoTrap, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='photos/')
+    capture_date = models.DateTimeField()
+    processed = models.BooleanField(default=False)
