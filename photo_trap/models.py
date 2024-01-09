@@ -1,6 +1,7 @@
 from django.db import models
 from django_countries.fields import CountryField
 from cities_light.models import City, Region
+from django.utils import timezone
 
 class PhotoTrap(models.Model):
     mac_address = models.CharField(max_length=255, primary_key=True)
@@ -24,5 +25,5 @@ class PhotoTrap(models.Model):
 class Photo(models.Model):
     photo_trap = models.ForeignKey(PhotoTrap, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='photos/')
-    capture_date = models.DateTimeField()
+    capture_date = models.DateTimeField(default=timezone.now)  # Ajuste aqui
     processed = models.BooleanField(default=False)
