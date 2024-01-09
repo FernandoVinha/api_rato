@@ -4,7 +4,7 @@ from rest_framework import status
 from .models import Photo, PhotoTrap
 from .serializers import PhotoSerializer,PhotoTrapSerializer
 from django.shortcuts import get_object_or_404
-
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class PhotoTrapView(APIView):
@@ -20,12 +20,14 @@ class PhotoTrapView(APIView):
 
 
 class PhotoView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
     def get(self, request):
         photos = Photo.objects.all()
         serializer = PhotoSerializer(photos, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = PhotoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
