@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class PhotoTrap(models.Model):
     mac_address = models.CharField(max_length=255, primary_key=True)
-    ntp_server = models.CharField(max_length=255, default="http://pool.ntp.org/")
+    ntp_url = models.CharField(max_length=255, default="http://pool.ntp.org")
     gmt_offset = models.IntegerField(default=-3)
     daylight_offset = models.IntegerField(default=0)
     movement_sensor = models.BooleanField(default=False)
@@ -14,8 +14,10 @@ class PhotoTrap(models.Model):
     latitude = models.FloatField(default=0.0)
     longitude = models.FloatField(default=0.0)
     floor = models.FloatField(default=0.0)
-    server_url = models.CharField(max_length=255, default="192.168.0.1")
-    firmware_path = models.CharField(max_length=255, default="https://github.com/FernandoVinha/PhotoTrapFirmware")
+    server_url = models.CharField(max_length=255, default="http://177.73.234.198")
+    photo_path = models.CharField(max_length=255, default="/photos/")
+    photo_port = models.IntegerField(default=88)
+    firmware_path = models.CharField(max_length=255, default="https://raw.githubusercontent.com/FernandoVinha/testebin/master")
     install_new_firmware = models.BooleanField(default=False)
     country = CountryField(blank_label='(select country)', default='BR')
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True)
