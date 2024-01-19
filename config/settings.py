@@ -134,3 +134,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # URL that handles the media served from MEDIA_ROOT, used for managing stored files.
 MEDIA_URL = '/media/'
+
