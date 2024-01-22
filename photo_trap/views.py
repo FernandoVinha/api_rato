@@ -15,10 +15,19 @@ class PhotoTrapView(APIView):
         try:
             photo_trap = PhotoTrap.objects.get(mac_address=mac_address)
         except PhotoTrap.DoesNotExist:
-            # Cria um novo registro se não existir
             photo_trap = PhotoTrap.objects.create(mac_address=mac_address)
+
+        # Serializa os dados antes de alterar o valor de install_new_firmware
         serializer = PhotoTrapSerializer(photo_trap)
-        return Response(serializer.data)
+        response = Response(serializer.data)
+
+        # Agora atualiza o valor de install_new_firmware, se necessário
+        if photo_trap.install_new_firmware:
+            photo_trap.install_new_firmware = False
+            photo_trap.save()
+
+        return response
+
 
 
 class PhotoView(APIView):
