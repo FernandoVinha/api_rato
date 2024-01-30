@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DynaSensor Wi-Fi Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <p style="text-align:center;"> <img style="max-width: 100%" src="dynasensor_icon_1.jpg"> </p>
+  <div "background-color=#0Aa128" class="topnav">
+    <h1>DynaSensor - Wi-Fi Manager</h1>
+  </div>
+  <div id="myGif">
+    <img style="max-width: 100%" src="g01.gif">
+  </div>
+  <div id="page" class="content" hidden>
+    <div class="card-grid">
+      <div class="card">
+        <form action="/" method="POST">
+			<p>
+			  <label class="label" for="ssid">SSID</label>
+			  <select type="text" id="ssid" name="ssid">
+				<option selected disabled hidden>Select a wireless network...</option>
+			  </select>
+			  <br>
+			  <label class="label" for="password">Password</label>
+			  <input type="text" id ="password" name="password"><br>
+			  <br>
+			  <input type ="submit" value ="Submit">
+			  <!--<input type ="submit" id="updateButton">Update Wireless Networks</button>-->
+		      <br>
+			  <!--<br>
+		      <button type="button" class="btn btn-info" id="updateButton">Update Wireless Networks</button>-->
+			</p>
+		  </form>
+      </div>
+    </div>
+  </div>
+  
+  <div id="done" class="content" hidden>
+    <div class="card-grid">
+      <div class="card">
+        <form action="/" method="POST">
+          <p>
+    
+    <div id="container_msg" >
+      <div id="content_msg">
+      <br><h3>Done!</h3><br><br>The device will automatically restart.<br><br>Connect to your router and go to the<br>IP Address that will appear on your device's display<br><br>
+    </div>
+    </div>
+    </p>
+        </form>
+      </div>
+    </div>
+  </div>
+    
+<script>
+    if (!!window.EventSource) {
+      const source = new EventSource('/events');
+
+      // Mantém a seleção atual do usuário.
+      let currentSelection = null;
+
+      source.addEventListener('open', () => {
+        console.log('Events Connected');
+      });
+
+      source.addEventListener('error', (e) => {
+        if (e.target.readyState !== EventSource.OPEN) {
+          console.log('Events Disconnected');
+        }
+      });
+
+      /*source.addEventListener('wifilist', (e) => {
+        console.log('wifilist', e.data);
+        const select = document.getElementById('ssid');
+        select.options[select.options.length] = new Option(e.data, e.data);
+
+        // Restaura a seleção do usuário após a atualização.
+        if (e.data === currentSelection) {
+          select.value = currentSelection;
+        }
+      });*/
+	  
+      source.addEventListener('wifilist', (e) => {
+	    console.log('wifilist', e.data);
+	    const select = document.getElementById('ssid');
+	    const existingOption = Array.from(select.options).find(option => option.value === e.data);
+	    if (!existingOption) {
+		  select.options[select.options.length] = new Option(e.data, e.data);
+	    }
+	  });
+      
+	  source.addEventListener('reset_list', () => {
+        console.log('reset_list');
+        document.getElementById('ssid').innerHTML = '';
+
+        // Limpa a seleção do usuário quando a lista é reiniciada.
+        currentSelection = null;
+      });
+
+
+      const ssidElement = document.getElementById('ssid');
+      ssidElement.onchange = function () {
+        const value = this.value;
+        const text = this.options[this.selectedIndex].text;
+
+        // Armazena a seleção do usuário.
+        currentSelection = value;
+      };
+
+      setTimeout(() => removeElement('myGif'), 8000);
+      setTimeout(() => updateDisplay('page', true), 9000);
+
+      source.addEventListener('done', () => {
+        updateDisplay('page', false);
+        updateDisplay('done', true);
+      });
+    }
+    
+    function updateDisplay(id, show) {
+      const element = document.getElementById(id);
+      element.style.display = show ? 'block' : 'none';
+    }
+    
+    function removeElement(id) {
+      const element = document.getElementById(id);
+      return element.parentNode.removeChild(element);
+    }
+    
+</script>
+
+</body>
+</html>
