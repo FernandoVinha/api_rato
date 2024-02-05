@@ -7,7 +7,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
-
+from django.http import FileResponse, Http404
+from django.views import View
+from .models import Firmware
 
 class PhotoTrapView(APIView):
 
@@ -62,3 +64,12 @@ class PhotoListView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save()
+
+class FirmwareDownloadView(View):
+    def get(self, request, firmware_id):
+        try:
+            firmware = Firmware.objects.get(id=firmware_id)
+            file_path = firmware.firmware_file.path
+            return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=firmware.firmware_file.name)
+        except Firmware.DoesNotExist:
+            raise Http404("Firmware not found.")

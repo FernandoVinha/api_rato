@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PhotoTrap, Photo
+from .models import *
 
 @admin.register(PhotoTrap)
 class PhotoTrapAdmin(admin.ModelAdmin):
@@ -15,3 +15,10 @@ class PhotoAdmin(admin.ModelAdmin):
     list_display = ['photo_trap', 'capture_date', 'processed']
     search_fields = ['photo_trap__mac_address', 'capture_date']
     list_filter = ['photo_trap', 'capture_date', 'processed']
+
+@admin.register(Firmware)
+class FirmwareAdmin(admin.ModelAdmin):
+    list_display = ['name', 'version', 'release_date']
+    search_fields = ['name', 'version', 'compatible_devices__mac_address']
+    list_filter = ['release_date', 'compatible_devices']
+
