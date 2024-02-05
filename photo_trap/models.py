@@ -30,3 +30,14 @@ class Photo(models.Model):
     photo = models.ImageField(upload_to='photos/')
     capture_date = models.DateTimeField(default=timezone.now)  # Ajuste aqui
     processed = models.BooleanField(default=False)
+
+class Firmware(models.Model):
+    name = models.CharField(max_length=255)
+    firmware_file = models.FileField(upload_to='firmwares/')
+    version = models.CharField(max_length=50)
+    release_date = models.DateTimeField(default=timezone.now)
+    compatible_devices = models.ManyToManyField(PhotoTrap)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.name} - Version {self.version}"
