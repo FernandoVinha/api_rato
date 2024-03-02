@@ -10,6 +10,12 @@ from rest_framework.exceptions import ValidationError
 from django.http import FileResponse, Http404
 from django.views import View
 from .models import Firmware
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from users.models import Customer
+from django.db.models import F
+import folium
+
 
 class PhotoTrapView(APIView):
 
@@ -73,3 +79,49 @@ class FirmwareDownloadView(View):
             return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=firmware.firmware_file.name)
         except Firmware.DoesNotExist:
             raise Http404("Firmware not found.")
+        
+
+@login_required
+def photo_trap_list(request):
+    user_company = request.user.company
+    customers = Customer.objects.filter(company=user_company)
+    customer_id = request.GET.get('customer')
+
+    if customer_id:
+        customer = get_object_or_404(Customer, pk=customer_id, company=user_company)
+        photo_traps = PhotoTrap.objects.filter(company=user_company, customer=customer)
+    else:
+        photo_traps = PhotoTrap.objects.filter(company=user_company)
+
+    # Calcular a média das coordenadas
+    latitudes = [trap.latitude for trap in photo_traps if trap.latitude and trap.longitude]
+    longitudes = [trap.longitude for trap in photo_traps if trap.latitude and trap.longitude]
+    
+    if latitudes and longitudes:
+        avg_lat = sum(latitudes) / len(latitudes)
+        avg_lng = sum(longitudes) / len(longitudes)
+        start_location = [avg_lat, avg_lng]
+    else:
+        # Valores padrão se não houver sensores com coordenadas válidas
+        start_location = [-15.788497, -47.879873]  # Coordenadas de exemplo
+
+    # Criação do mapa com Folium com zoom inicial definido para 6
+    m = folium.Map(location=start_location, zoom_start=6)
+
+    for trap in photo_traps:
+        if trap.latitude and trap.longitude:
+            folium.Marker(
+                [trap.latitude, trap.longitude],
+                popup=f'MAC: {trap.mac_address}<br>Status: {trap.get_status_display()}',
+                icon=folium.Icon(color='green' if trap.status == 3 else 'red' if trap.status == 1 else 'orange' if trap.status == 2 else 'gray')
+            ).add_to(m)
+
+    # Renderizar mapa para HTML
+    map_html = m._repr_html_()
+
+    return render(request, 'photo_trap_list.html', {
+        'photo_traps': photo_traps,
+        'customers': customers,
+        'selected_customer': customer_id,
+        'map': map_html,
+    })

@@ -1,7 +1,18 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator, MaxValueValidator
 
+
+class Company(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Nome')
+    address = models.CharField(max_length=255, verbose_name='Endereço')
+    email = models.EmailField(unique=True, verbose_name='E-mail')
+    phone = models.CharField(max_length=15, verbose_name='Telefone')
+    image = models.ImageField(upload_to='Company/', blank=True, null=True)  # Novo campo para imagem
+
+    def __str__(self):
+        return self.name
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -25,10 +36,12 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True)
     email = models.EmailField(_('endereço de e-mail'), unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    
+    image = models.ImageField(upload_to='CustomUser/', blank=True, null=True)  # Novo campo para imagem
+    level = models.IntegerField(default=0,validators=[MinValueValidator(0), MaxValueValidator(10)])
 
     objects = CustomUserManager()
 
@@ -37,3 +50,23 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+
+class Customer(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    phone_1 = models.CharField(max_length=15)
+    phone_2 = models.CharField(max_length=15, blank=True, null=True)  # Campo opcional
+    address = models.CharField(max_length=255, blank=True)
+    CNPJ = models.CharField(max_length=18)
+    contact_1 = models.CharField(max_length=100, blank=True, null=True)  # Campo opcional
+    contact_2 = models.CharField(max_length=100, blank=True, null=True)  # Campo opcional
+    contact_3 = models.CharField(max_length=100, blank=True, null=True)  # Campo opcional
+    activity = models.CharField(max_length=100)
+    status = models.CharField(max_length=100)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='customer_images/', blank=True, null=True)  # Novo campo para imagem
+
+    def __str__(self):
+        return self.name

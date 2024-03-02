@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  
+
+  <!-- Formulário para Seleção de Cliente -->
+<!-- Formulário para Seleção de Cliente -->
+<div class="d-flex justify-content-center align-items-center">
+  <form method="get" action="{% url 'dashboard' %}" class="d-flex align-items-center">
+      <select name="customer" onchange="this.form.submit()" class="form-control mr-3">
+          <option value="">Escolha um cliente...</option>
+          {% for customer in customers %}
+              <option value="{{ customer.id }}" {% if customer.id == selected_customer|stringformat:"i" %}selected{% endif %}>{{ customer.name }}</option>
+          {% endfor %}
+      </select>
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary">Mostrar Todos</a>
+  </form>
+</div>
+
+  <!-- Tabela de Sensores -->
+  <table class="table mt-4">
+    <thead>
+      <tr>
+        <th>MAC Address</th>
+        <th>Cliente</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for trap in photo_traps %}
+        <tr class="{% if trap.status == 0 %}table-secondary{% elif trap.status == 1 %}table-danger{% elif trap.status == 2 %}table-warning{% else %}table-success{% endif %}">
+          <td>{{ trap.mac_address }}</td>
+          <td>{{ trap.customer.name }}</td>
+          <td>{{ trap.get_status_display }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">Nenhum sensor encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Container do Mapa -->
+  <div id="map" style="height: 400px;">
+      {{ map|safe }}
+  </div>
+
+{% endblock %}

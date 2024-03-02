@@ -2,6 +2,14 @@ from django.db import models
 from django_countries.fields import CountryField
 from cities_light.models import City, Region
 from django.utils import timezone
+from users import *
+STATUS_CHOICES = [
+    (0, 'Offline'),
+    (1, 'With Issues'),
+    (2, 'Attention Needed'),
+    (3, 'Operational'),
+]
+
 
 class PhotoTrap(models.Model):
     mac_address = models.CharField(max_length=255, primary_key=True)
@@ -23,6 +31,9 @@ class PhotoTrap(models.Model):
     country = CountryField(blank_label='(select country)', default='BR')
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
+    company = models.ForeignKey('users.Company', on_delete=models.SET_NULL, null=True, blank=True)
+    customer = models.ForeignKey('users.Customer', on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=3)
 
 
 class Photo(models.Model):
@@ -41,3 +52,5 @@ class Firmware(models.Model):
 
     def __str__(self):
         return f"{self.name} - Version {self.version}"
+
+

@@ -21,4 +21,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('photo_trap.urls')),  # Adicione esta linha
+    path('', include('users.urls')),  # Adicione esta linha
 ]
