@@ -56,15 +56,15 @@ class Customer(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    phone_1 = models.CharField(max_length=15)
+    phone_1 = models.CharField(max_length=15,blank=True, null=True)
     phone_2 = models.CharField(max_length=15, blank=True, null=True)  # Campo opcional
     address = models.CharField(max_length=255, blank=True)
-    CNPJ = models.CharField(max_length=18)
+    CNPJ = models.CharField(max_length=18,blank=True, null=True)
     contact_1 = models.CharField(max_length=100, blank=True, null=True)  # Campo opcional
     contact_2 = models.CharField(max_length=100, blank=True, null=True)  # Campo opcional
     contact_3 = models.CharField(max_length=100, blank=True, null=True)  # Campo opcional
-    activity = models.CharField(max_length=100)
-    status = models.CharField(max_length=100)
+    activity = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=100, blank=True, null=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='customer_images/', blank=True, null=True)  # Novo campo para imagem
 

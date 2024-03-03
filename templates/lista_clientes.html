@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Lista de Clientes</h2>
+    <form class="form-inline" method="GET" action="{% url 'lista_clientes' %}">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar Cliente" name="search" value="{{ request.GET.search }}">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            </div>
+        </div>
+    </form>
+    <a href="{% url 'adicionar_cliente' %}" class="btn btn-success">Adicionar Cliente</a>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nome</th>
+      <th scope="col">Email</th>
+      <th scope="col">Telefone</th>
+      <th scope="col">Ações</th> <!-- Nova coluna para botões de ação -->
+    </tr>
+  </thead>
+  <tbody>
+    {% for cliente in clientes %}
+    <tr>
+      <td>{{ cliente.name }}</td>
+      <td>{{ cliente.email }}</td>
+      <td>{{ cliente.phone_1 }}</td>
+      <td>
+        <!-- Botão de edição -->
+        <a href="{% url 'editar_cliente' cliente.pk %}" class="btn btn-sm btn-primary">Editar</a>
+        <!-- Botão de exclusão -->
+        <a href="{% url 'excluir_cliente' cliente.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

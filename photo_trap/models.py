@@ -34,6 +34,24 @@ class PhotoTrap(models.Model):
     company = models.ForeignKey('users.Company', on_delete=models.SET_NULL, null=True, blank=True)
     customer = models.ForeignKey('users.Customer', on_delete=models.SET_NULL, null=True, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=3)
+    TRAP_STATUS_CHOICES = [
+        ('NONE', 'None'),
+        ('T_REX_OK', 'T-Rex OK'),
+        ('T_REX_DISARMED', 'T-Rex Disarmed'),
+        ('GLUE_OK', 'Glue OK'),
+        ('RAT_ON_GLUE', 'Rat on Glue'),
+        ('GLUE_WITH_DUST', 'Glue with Dust'),
+        ('POISON_OK', 'Poison OK'),
+        ('LITTLE_POISON', 'Little Poison'),
+        ('MOLDY_POISON', 'Moldy Poison'),
+    ]
+
+    # Adicionando o novo campo de escolha
+    trap_status = models.CharField(
+        max_length=20,
+        choices=TRAP_STATUS_CHOICES,
+        default='NONE',
+    )
 
 
 class Photo(models.Model):

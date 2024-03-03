@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Lista de PhotoTraps</h2>
+    <form class="form-inline" method="GET" action="{% url 'lista_phototraps' %}">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar PhotoTrap" name="search" value="{{ request.GET.search }}">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            </div>
+        </div>
+    </form>
+    <a href="{% url 'verificar_mac_address' %}" class="btn btn-success">Adicionar ou Editar PhotoTrap</a>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Endereço MAC</th>
+      <th scope="col">Latitude</th>
+      <th scope="col">Longitude</th>
+      <th scope="col">Status</th> <!-- Coluna adicional para status, se necessário -->
+      <th scope="col">Ações</th> <!-- Coluna para botões de ação -->
+    </tr>
+  </thead>
+  <tbody>
+    {% for phototrap in phototraps %}
+    <tr>
+      <td>{{ phototrap.mac_address }}</td>
+      <td>{{ phototrap.latitude }}</td>
+      <td>{{ phototrap.longitude }}</td>
+      <td>{{ phototrap.trap_status }}</td> <!-- Exibe o status, se você adicionou esse campo -->
+      <td>
+        <!-- Botão de edição -->
+        <a href="{% url 'editar_phototrap' phototrap.pk %}" class="btn btn-sm btn-primary">Editar</a>
+        <!-- Botão de exclusão -->
+        <a href="{% url 'excluir_phototrap' phototrap.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

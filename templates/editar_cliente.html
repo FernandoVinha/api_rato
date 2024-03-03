@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="h3 mb-3 fw-normal text-center">Editar Cliente</h1>
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+        
+        <div class="col-md-6">
+            <main class="form-signin">
+                <form method="post">
+                    {% csrf_token %}
+                    
+
+                    <!-- Primeira metade da tela -->
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.name.id_for_label }}" name="{{ form.name.name }}" class="form-control" placeholder="Nome" required value="{{ form.name.value }}">
+                        <label for="{{ form.name.id_for_label }}">Nome</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" id="{{ form.email.id_for_label }}" name="{{ form.email.name }}" class="form-control" placeholder="Email address" required value="{{ form.email.value }}">
+                        <label for="{{ form.email.id_for_label }}">Endereço de Email</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.phone_1.id_for_label }}" name="{{ form.phone_1.name }}" class="form-control" placeholder="Telefone 1" required value="{{ form.phone_1.value }}">
+                        <label for="{{ form.phone_1.id_for_label }}">Telefone 1</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.phone_2.id_for_label }}" name="{{ form.phone_2.name }}" class="form-control" placeholder="Telefone 2 (Opcional)" value="{{ form.phone_2.value }}">
+                        <label for="{{ form.phone_2.id_for_label }}">Telefone 2 (Opcional)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.address.id_for_label }}" name="{{ form.address.name }}" class="form-control" placeholder="Endereço" value="{{ form.address.value }}">
+                        <label for="{{ form.address.id_for_label }}">Endereço</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.CNPJ.id_for_label }}" name="{{ form.CNPJ.name }}" class="form-control" placeholder="CNPJ" required value="{{ form.CNPJ.value }}">
+                        <label for="{{ form.CNPJ.id_for_label }}">CNPJ</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- Segunda metade da tela -->
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.contact_1.id_for_label }}" name="{{ form.contact_1.name }}" class="form-control" placeholder="Contato 1 (Opcional)" value="{{ form.contact_1.value }}">
+                        <label for="{{ form.contact_1.id_for_label }}">Contato 1 (Opcional)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.contact_2.id_for_label }}" name="{{ form.contact_2.name }}" class="form-control" placeholder="Contato 2 (Opcional)" value="{{ form.contact_2.value }}">
+                        <label for="{{ form.contact_2.id_for_label }}">Contato 2 (Opcional)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.contact_3.id_for_label }}" name="{{ form.contact_3.name }}" class="form-control" placeholder="Contato 3 (Opcional)" value="{{ form.contact_3.value }}">
+                        <label for="{{ form.contact_3.id_for_label }}">Contato 3 (Opcional)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.activity.id_for_label }}" name="{{ form.activity.name }}" class="form-control" placeholder="Atividade" value="{{ form.activity.value }}">
+                        <label for="{{ form.activity.id_for_label }}">Atividade</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="{{ form.status.id_for_label }}" name="{{ form.status.name }}" class="form-control" placeholder="Status" value="{{ form.status.value }}">
+                        <label for="{{ form.status.id_for_label }}">Status</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="file" id="{{ form.image.id_for_label }}" name="{{ form.image.name }}" class="form-control" accept="image/*">
+                        <label for="{{ form.image.id_for_label }}">Imagem</label>
+                    </div>
+                </div>
+                <div class="col-12 text-center">
+                    <button class="btn btn-lg btn-primary" type="submit">Salvar</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+{% endblock %}

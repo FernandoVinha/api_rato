@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Editar PhotoTrap</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="latitude">Latitude:</label>
+                        <input type="text" id="latitude" name="latitude" class="form-control" value="{{ phototrap.latitude }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">Longitude:</label>
+                        <input type="text" id="longitude" name="longitude" class="form-control" value="{{ phototrap.longitude }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="floor">Floor:</label>
+                        <input type="text" id="floor" name="floor" class="form-control" value="{{ phototrap.floor }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country:</label>
+                        <input type="text" id="country" name="country" class="form-control" value="{{ phototrap.country }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="region">Region:</label>
+                        <input type="text" id="region" name="region" class="form-control" value="{{ phototrap.region_id }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City:</label>
+                        <input type="text" id="city" name="city" class="form-control" value="{{ phototrap.city_id }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer">Customer:</label>
+                        <select id="customer" name="customer" class="form-control">
+                            <option value="">Select Customer</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.pk }}" {% if phototrap.customer_id == customer.pk %} selected {% endif %}>{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

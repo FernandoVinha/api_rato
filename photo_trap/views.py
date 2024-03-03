@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Photo, PhotoTrap
 from .serializers import PhotoSerializer,PhotoTrapSerializer
-from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
@@ -11,11 +10,12 @@ from django.http import FileResponse, Http404
 from django.views import View
 from .models import Firmware
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from users.models import Customer
 from django.db.models import F
 import folium
-
+from django.db.models import Q
+from django.contrib import messages
 
 class PhotoTrapView(APIView):
 
@@ -125,3 +125,90 @@ def photo_trap_list(request):
         'selected_customer': customer_id,
         'map': map_html,
     })
+
+@login_required
+def verificar_mac_address(request):
+    if request.method == 'POST':
+        mac_address = request.POST.get('mac_address')
+        try:
+            phototrap = PhotoTrap.objects.get(mac_address=mac_address)
+            # Redirecionar para a view editar_phototrap com o pk do PhotoTrap encontrado
+            return redirect('editar_phototrap', pk=phototrap.pk)
+        except PhotoTrap.DoesNotExist:
+            # Lógica para lidar com o caso em que o PhotoTrap não existe
+            pass
+    return render(request, 'verificar_mac_address.html')
+
+@login_required
+def editar_phototrap(request, pk):
+    phototrap = PhotoTrap.objects.get(pk=pk)
+
+    # Verifica se o usuário está associado a uma empresa
+    if request.user.company:
+        company = request.user.company
+
+        # Verifica se o usuário pertence à mesma empresa do PhotoTrap ou se é superusuário
+        if request.user.is_superuser or phototrap.company == company:
+            if request.method == 'POST':
+                phototrap.latitude = request.POST.get('latitude')
+                phototrap.longitude = request.POST.get('longitude')
+                phototrap.floor = request.POST.get('floor')
+                phototrap.country = request.POST.get('country')
+                phototrap.region_id = request.POST.get('region')
+                phototrap.city_id = request.POST.get('city')
+                
+                # Verifica se o customer_id pertence à mesma empresa do usuário
+                customer_id = request.POST.get('customer')
+                if customer_id:
+                    customer = Customer.objects.filter(company=company, pk=customer_id).first()
+                    phototrap.customer = customer
+                else:
+                    phototrap.customer = None
+
+                phototrap.save()
+                return redirect('pagina_sucesso')  # Redireciona para página de sucesso após edição
+
+            # Recupera todos os clientes associados à empresa do usuário para serem exibidos no formulário
+            customers = Customer.objects.filter(company=company)
+
+            return render(request, 'editar_phototrap.html', {'phototrap': phototrap, 'customers': customers})
+
+    # Se o usuário não está associado a uma empresa ou não tem permissão para editar o PhotoTrap,
+    # redirecionar para uma página de erro ou fazer outra ação adequada
+    return render(request, 'dashboard', {'mensagem': 'Você não tem permissão para editar este PhotoTrap.'})
+
+@login_required
+def lista_phototraps(request):
+    # Verifica se o usuário está logado
+    if request.user.is_authenticated:
+        # Verifica se o usuário pertence a uma empresa
+        if request.user.company:
+            # Recupera o termo de busca, se existir
+            search_query = request.GET.get('search', '')
+            # Filtra os PhotoTraps da mesma empresa que o usuário logado, considerando o termo de busca
+            phototraps = PhotoTrap.objects.filter(
+                Q(mac_address__icontains=search_query) |  # Filtra por endereço MAC parecido
+                Q(latitude__icontains=search_query) |  # Filtra por latitude parecida
+                Q(longitude__icontains=search_query)  # Filtra por longitude parecida
+            ).filter(company=request.user.company)
+            # Renderiza o template com a lista de PhotoTraps
+            return render(request, 'lista_phototraps.html', {'phototraps': phototraps})
+        else:
+            # Se o usuário não pertencer a nenhuma empresa, redirecione para uma página de erro ou faça outra ação adequada
+            return render(request, 'pagina_de_erro.html', {'mensagem': 'Você não está associado a uma empresa.'})
+    else:
+        # Se o usuário não estiver logado, redireciona para a página de login
+        return redirect('login')
+    
+@login_required
+def excluir_phototrap(request, mac_address):
+    phototrap = get_object_or_404(PhotoTrap, mac_address=mac_address)
+    
+    # Verifica se o usuário tem permissão para excluir o PhotoTrap
+    if request.user.is_superuser or (request.user.company and request.user.company == phototrap.company):
+        phototrap.delete()
+        messages.success(request, "PhotoTrap excluído com sucesso.")
+    else:
+        messages.error(request, "Você não tem permissão para excluir este PhotoTrap.")
+
+    return redirect('lista_phototraps')
