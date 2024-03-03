@@ -31,6 +31,7 @@
         <tr class="{% if trap.status == 0 %}table-secondary{% elif trap.status == 1 %}table-danger{% elif trap.status == 2 %}table-warning{% else %}table-success{% endif %}">
           <td>{{ trap.mac_address }}</td>
           <td>{{ trap.customer.name }}</td>
+          <td>{{ trap.customer.status }}</td>
           <td>{{ trap.get_status_display }}</td>
         </tr>
       {% empty %}
